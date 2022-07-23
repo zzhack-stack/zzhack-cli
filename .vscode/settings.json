@@ -1,0 +1,8 @@
+{
+    "rust-analyzer.cargo.unsetTest": [
+        "tokio",
+        "tokio-macros",
+        "clap",
+        "clap-macros"
+    ]
+}

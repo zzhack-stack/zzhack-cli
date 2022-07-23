@@ -1,0 +1,61 @@
+{
+    "app_name": "foo",
+    "logo": "",
+    "pages": [
+        {
+            "name": "post",
+            "route": "home",
+            "template": "post",
+            "source": "foo"
+        },
+        {
+            "name": "posts",
+            "template": "posts",
+            "source": "./posts"
+        },
+        {
+            "name": "kkk",
+            "template": "posts",
+            "source": "./kkk"
+        },
+        {
+            "name": "links",
+            "template": "links",
+            "banner_text": "",
+            "source": "./links.config.json"
+        },
+        {
+            "name": "projects",
+            "route": "prj",
+            "template": "projects",
+            "source": "./projects.config.json"
+        }
+    ],
+    "contacts": [
+        {
+            "kind": "Twitter",
+            "link": ""
+        },
+        {
+            "kind": "GitHub",
+            "link": ""
+        },
+        {
+            "kind": "WeChat",
+            "link": ""
+        },
+        {
+            "kind": "Discord",
+            "link": ""
+        },
+        {
+            "kind": "Email",
+            "link": ""
+        },
+        {
+            "kind": "Custom",
+            "icon": "xxxx",
+            "link": ""
+        }
+    ]
+}
