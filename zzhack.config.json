@@ -1,6 +1,7 @@
 {
     "app_name": "foo",
     "logo": "",
+    "resource_dir": "./asd",
     "pages": [
         {
             "name": "post",

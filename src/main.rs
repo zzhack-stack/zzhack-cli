@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use driver::apply_router::{apply_pages_config, PageConfig};
+use driver::apply_static_resource::apply_static_resource;
 use serde::Deserialize;
 use std::fs::{self, create_dir};
 use std::io::ErrorKind;
@@ -34,6 +35,7 @@ pub struct ZZHACKConfig {
     pub app_name: String,
     pub logo: Option<String>,
     pub pages: Vec<PageConfig>,
+    pub resource_dir: Option<String>,
     pub contacts: Option<Vec<ContactConfig>>,
 }
 
@@ -48,6 +50,10 @@ pub fn apply_config() {
         .expect("Cannot parse the config of zzhack, please make sure you are suit the bounds of zzhack config");
 
     apply_pages_config(config.pages);
+
+    if let Some(resource_dir_path) = config.resource_dir {
+        apply_static_resource(resource_dir_path);
+    };
 }
 
 pub fn main() {

@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 clap = { version = "3.1.12", features = ["derive"] }
 convert_case = "0.5.0"
+fs_extra = "1.2.0"
 indicatif = "0.16.2"
 regex = "1.6.0"
 serde = { version = "1.0.140", features = ["derive"]}
