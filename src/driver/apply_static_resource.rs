@@ -1,6 +1,5 @@
-use std::fs::{self, read_dir};
-
 use fs_extra::dir::remove;
+use std::fs;
 
 use super::common::rewrite_dir;
 use std::path::Path;
