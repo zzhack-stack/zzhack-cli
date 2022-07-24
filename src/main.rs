@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
+use driver::apply_github_bar::{apply_github_bar, reset_github_bar};
 use driver::apply_router::{apply_pages_config, PageConfig};
-use driver::apply_static_resource::apply_static_resource;
+use driver::apply_static_resource::{apply_static_resource, reset_static_resource};
 use serde::Deserialize;
 use std::fs::{self, create_dir};
 use std::io::ErrorKind;
@@ -37,6 +38,7 @@ pub struct ZZHACKConfig {
     pub pages: Vec<PageConfig>,
     pub resource_dir: Option<String>,
     pub contacts: Option<Vec<ContactConfig>>,
+    pub github_bar: Option<String>,
 }
 
 const TEMPLATE_DIR: &'static str = ".zzhack";
@@ -51,9 +53,15 @@ pub fn apply_config() {
 
     apply_pages_config(config.pages);
 
-    if let Some(resource_dir_path) = config.resource_dir {
-        apply_static_resource(resource_dir_path);
+    match config.resource_dir {
+        Some(resource_dir_path) => apply_static_resource(resource_dir_path),
+        None => reset_static_resource(),
     };
+
+    match config.github_bar {
+        Some(github_bar_config) => apply_github_bar(github_bar_config),
+        None => reset_github_bar(),
+    }
 }
 
 pub fn main() {
