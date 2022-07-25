@@ -30,18 +30,14 @@ pub fn rewrite_with_template(template: String, rewrite_path: &'static str) {
         .expect(APPLY_ZZHACK_FOLDER_ERROR_MESSAGE)
 }
 
-pub fn rewrite_dir(from: &str, to: &str) {
+pub fn copy_inside(from: &str, to: &str) {
     let cp_err_msg = format!("No directory such as {}", from);
     let mut options = CopyOptions::default();
 
     options.copy_inside = true;
     options.content_only = true;
 
-    remove(to).unwrap();
-    copy(
-        fs::canonicalize(from).unwrap(),
-        ".zzhack/app/assets/sources/",
-        &options,
-    )
-    .expect(cp_err_msg.as_str());
+    match copy(fs::canonicalize(from).unwrap(), to, &options) {
+        _ => (),
+    };
 }

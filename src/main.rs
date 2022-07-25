@@ -1,9 +1,13 @@
 use clap::{Parser, Subcommand};
 use config::apply_config;
-use std::fs::create_dir;
+use fs_extra::dir::remove;
+use std::fs::{self, create_dir};
 use std::io::ErrorKind;
+use std::path::Path;
 use std::process::Command;
 use utils::exec::exec_sync_with_spinner;
+
+use crate::driver::common::copy_inside;
 
 mod config;
 mod driver;
@@ -20,10 +24,13 @@ struct CLI {
 enum Action {
     Init,
     Serve,
+    Build,
 }
 
 const TEMPLATE_DIR: &'static str = ".zzhack";
 const TEMPLATE_REMOTE_ADDR: &'static str = "https://github.com/zzhack-stack/zzhack";
+const CLI_CONFIG_TEMPLATE_REMOTE_ADDR: &'static str =
+    "https://github.com/zzhack-stack/zzhack-init-template-zh";
 
 pub fn main() {
     let args = CLI::parse();
@@ -47,20 +54,25 @@ pub fn main() {
                     .output()
                     .unwrap();
             });
-            exec_sync_with_spinner("Generate zzhack init template config", move || {
-                // Command::new("git")
-                //     .arg("clone")
-                //     .arg("-b")
-                //     .arg("feature/cli")
-                //     .arg(TEMPLATE_REMOTE_ADDR)
-                //     .arg(TEMPLATE_DIR)
-                //     .output()
-                //     .unwrap();
-            });
-            // ::with_template("{prefix:.bold.dim} {spinner} {wide_msg}")
-            //     .unwrap()
-            //     .tick_chars("⠁⠂⠄⡀⢀⠠⠐⠈ ");
-            // create_dir(TEMPLATE_DIR).unwrap();
+
+            // TODO: disgusting language
+
+            if !Path::new("./zzhack.config.json").exists() {
+                exec_sync_with_spinner("Sync zzhack zh template", || {
+                    Command::new("git")
+                        .arg("clone")
+                        .arg(CLI_CONFIG_TEMPLATE_REMOTE_ADDR)
+                        .arg(".template")
+                        .output()
+                        .unwrap();
+                });
+
+                copy_inside(".template", ".");
+
+                if Path::new("./.template").exists() {
+                    remove(".template").unwrap();
+                }
+            }
         }
         Action::Serve => {
             exec_sync_with_spinner("Apply config", || {
@@ -69,6 +81,17 @@ pub fn main() {
 
             Command::new("trunk")
                 .arg("serve")
+                .current_dir(".zzhack/app")
+                .spawn()
+                .unwrap()
+                .wait()
+                .unwrap();
+        }
+        Action::Build => {
+            Command::new("trunk")
+                .arg("build")
+                .arg("-d")
+                .arg("../../dist")
                 .current_dir(".zzhack/app")
                 .spawn()
                 .unwrap()
