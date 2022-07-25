@@ -1,19 +1,14 @@
-use fs_extra::dir::remove;
-use std::fs;
-
-use super::common::rewrite_dir;
 use std::path::Path;
 
-const RESOURCE_DIR: &'static str = ".zzhack/app/assets/sources/";
+pub fn apply_static_resource(resource_dir: String) -> String {
+    let dir_path = Path::new("../..").join(&resource_dir);
 
-pub fn apply_static_resource(resource_dir: String) {
-    rewrite_dir(&resource_dir, RESOURCE_DIR);
-}
-
-pub fn reset_static_resource() {
-    if Path::new(RESOURCE_DIR).exists() {
-        remove(RESOURCE_DIR).unwrap();
-    } else {
-        fs::create_dir(RESOURCE_DIR).unwrap();
+    if !Path::new(&resource_dir).exists() {
+        panic!("Please make sure the resource_dir does exist");
     }
+
+    format!(
+        "<link data-trunk rel=\"copy-dir\" href=\"{}\">",
+        dir_path.to_str().unwrap()
+    )
 }

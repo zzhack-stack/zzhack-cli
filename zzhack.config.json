@@ -1,7 +1,16 @@
 {
-    "app_name": "foo",
-    "logo": "",
-    "resource_dir": "./asd",
+    "app": {
+        "name": "foo",
+        "keywords": "",
+        "description": "",
+        "logo": ""
+    },
+    "profile": {
+        "name": "Misttt",
+        "avatar": "switch_theme_guide.png"
+    },
+    "github_bar":"https://github.com/mistricky",
+    "resource_dir": "./kkk",
     "pages": [
         {
             "name": "post",
@@ -32,31 +41,14 @@
             "source": "./projects.config.json"
         }
     ],
-    "contacts": [
-        {
-            "kind": "Twitter",
-            "link": ""
-        },
-        {
-            "kind": "GitHub",
-            "link": ""
-        },
-        {
-            "kind": "WeChat",
-            "link": ""
-        },
-        {
-            "kind": "Discord",
-            "link": ""
-        },
-        {
-            "kind": "Email",
-            "link": ""
-        },
-        {
-            "kind": "Custom",
-            "icon": "xxxx",
-            "link": ""
-        }
-    ]
+    "footer": {
+        "copyright": "",
+        "contacts": [
+            {
+                "icon": "",
+                "link": "",
+                "icon_size": 20
+            }
+        ]
+    }
 }

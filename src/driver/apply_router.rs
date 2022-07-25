@@ -7,6 +7,7 @@ use crate::template::{Template, TEMPLATES};
 
 use super::apply_links::apply_links_config;
 use super::apply_projects::apply_projects_config;
+use super::common::{rewrite_with_template, with_static_resource};
 
 const BUILD_IN_ROUTE: [&'static str; 3] = ["post", "not_found", "root"];
 const FIRST_PAGE_ROUTE_ENUM_NAME: &'static str = "Home";
@@ -20,8 +21,9 @@ pub struct PageConfig {
     pub source: String,
     // Posts optional config
     pub banner: Option<String>,
-    // projects optional config
-    pub github: Option<String>,
+    // projects & links optional config
+    pub banner_link: Option<String>,
+    pub banner_text: Option<String>,
 }
 
 pub fn parse_page_route(page: &PageConfig) -> String {
@@ -107,7 +109,7 @@ pub fn apply_router(pages: &Vec<PageConfig>) {
         .expect("Please make sure the .zzhack folder does exist.");
 }
 
-pub fn apply_routes_switch(pages: &Vec<PageConfig>) {
+pub fn apply_routes_switch(pages: &Vec<PageConfig>, static_resource_path: &Option<String>) {
     let mut post_file_template: Vec<String> = vec![];
     let switch_cases = pages
         .iter()
@@ -124,9 +126,56 @@ pub fn apply_routes_switch(pages: &Vec<PageConfig>) {
             };
 
             match template {
-                Template::Links => apply_links_config(&page.source),
-                Template::Projects => apply_projects_config(&page.source),
+                Template::Links => {
+                    let banner_text = page
+                        .banner_text
+                        .clone()
+                        .expect("Missing the banner_text field in links page");
+
+                    rewrite_with_template(
+                        format!(
+                            "
+                            pub const LINKS_BANNER_TEXT: &'static str = \"{}\";
+                    ",
+                            banner_text
+                        ),
+                        "pages/links/src/links_config.rs",
+                    );
+
+                    apply_links_config(&page.source)
+                }
+                Template::Projects => {
+                    let banner_link = page.banner_link.clone().unwrap_or(String::from("#"));
+                    let banner_text = page.banner_text.clone().unwrap_or(String::from(""));
+
+                    rewrite_with_template(
+                        format!(
+                            "
+                        pub const PROJECTS_BANNER_TEXT: &'static str = \"{}\";
+                        pub const PROJECTS_BANNER_LINK: &'static str = \"{}\";
+                    ",
+                            banner_text, banner_link
+                        ),
+                        "pages/projects/src/projects_config.rs",
+                    );
+
+                    apply_projects_config(&page.source);
+                }
                 Template::Posts => {
+                    let banner = page.banner.clone().unwrap_or(String::from(""));
+                    let banner_source = with_static_resource(static_resource_path, &banner);
+                    // let banner Text
+                    rewrite_with_template(
+                        format!(
+                            "
+                                pub const BANNER_LINK: &'static str = \"{}\";
+                            ",
+                            banner_source
+                        ),
+                        "pages/home/src/posts_config.rs",
+                    );
+
+                    // Construct routes
                     let dir = fs::read_dir(&page.source).expect(
                         format!("Please make sure the {} does exits.", &page.source).as_str(),
                     );
@@ -264,9 +313,9 @@ pub fn apply_navigator(pages: &Vec<PageConfig>) {
         .expect("Please make sure the .zzhack folder does exist.");
 }
 
-pub fn apply_pages_config(pages: Vec<PageConfig>) {
+pub fn apply_pages_config(pages: Vec<PageConfig>, static_resource_path: &Option<String>) {
     verify_pages_name_and_route(&pages);
     apply_router(&pages);
-    apply_routes_switch(&pages);
+    apply_routes_switch(&pages, static_resource_path);
     apply_navigator(&pages);
 }
