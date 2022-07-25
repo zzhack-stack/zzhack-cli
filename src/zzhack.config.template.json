@@ -1,0 +1,10 @@
+{
+    "resource_dir": "./kkk",
+    "pages": [
+        {
+            "name": "wiki",
+            "template": "post",
+            "source": "./wiki.md"
+        }
+    ]
+}
