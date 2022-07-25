@@ -1,3 +1,4 @@
+use std::path::{Path, PathBuf};
 use std::{fs, time::UNIX_EPOCH};
 
 use convert_case::{Case, Casing};
@@ -109,6 +110,24 @@ pub fn apply_router(pages: &Vec<PageConfig>) {
         .expect("Please make sure the .zzhack folder does exist.");
 }
 
+pub fn get_post_file_from_path(path: &PathBuf) -> (String, u128, String) {
+    let stemname = path.file_stem().unwrap().to_str().unwrap().to_string();
+    let metadata = path.metadata().unwrap();
+    let modified_time = metadata
+        .modified()
+        .unwrap()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_millis();
+    let filepath = fs::canonicalize(&path)
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string();
+
+    (filepath, modified_time, stemname)
+}
+
 pub fn apply_routes_switch(pages: &Vec<PageConfig>, static_resource_path: &Option<String>) {
     let mut post_file_template: Vec<String> = vec![];
     let switch_cases = pages
@@ -120,7 +139,14 @@ pub fn apply_routes_switch(pages: &Vec<PageConfig>, static_resource_path: &Optio
             let route_enum_name = get_route_enum_name(idx, page);
             let posts_source_key_name = format!("{}{}", route_enum_name, POST_SOURCE_SUFFIX);
             let properties = match template {
-                Template::Post => format!("filename=\"{}\"", page.source),
+                Template::Post => format!(
+                    "filename=\"{}\"",
+                    Path::new(&page.source)
+                        .file_stem()
+                        .unwrap()
+                        .to_str()
+                        .unwrap()
+                ),
                 Template::Posts => format!("posts_key=\"{}\"", posts_source_key_name),
                 _ => String::from(""),
             };
@@ -143,6 +169,21 @@ pub fn apply_routes_switch(pages: &Vec<PageConfig>, static_resource_path: &Optio
                     );
 
                     apply_links_config(&page.source)
+                }
+                Template::Post => {
+                    let (filepath, modified_time, filename) =
+                        get_post_file_from_path(&Path::new(&page.source).to_path_buf());
+
+                    post_file_template.push(format!(
+                        "
+                        (String::from(\"{}\"), vec![PostFile {{
+                            content: include_str!(\"{}\"),
+                            modified_time: {},
+                            filename: \"{}\"
+                        }}])
+                    ",
+                        posts_source_key_name, filepath, modified_time, filename
+                    ));
                 }
                 Template::Projects => {
                     let banner_link = page.banner_link.clone().unwrap_or(String::from("#"));
@@ -183,15 +224,8 @@ pub fn apply_routes_switch(pages: &Vec<PageConfig>, static_resource_path: &Optio
                         .map(|entry| {
                             let entry = entry.unwrap();
                             let path = entry.path();
-                            let stemname = &path.file_stem().unwrap().to_str().unwrap();
-                            let metadata = entry.metadata().unwrap();
-                            let modified_time = metadata
-                                .modified()
-                                .unwrap()
-                                .duration_since(UNIX_EPOCH)
-                                .unwrap()
-                                .as_millis();
-                            let filepath = fs::canonicalize(&path).unwrap();
+                            let (filepath, modified_time, filename) =
+                                get_post_file_from_path(&Path::new(&path).to_path_buf());
 
                             format!(
                                 "
@@ -200,9 +234,7 @@ pub fn apply_routes_switch(pages: &Vec<PageConfig>, static_resource_path: &Optio
                                     modified_time: {},
                                     filename: \"{}\"
                                 }}",
-                                filepath.to_str().unwrap(),
-                                modified_time,
-                                stemname
+                                filepath, modified_time, filename
                             )
                         })
                         .collect::<Vec<String>>()
