@@ -14,7 +14,7 @@ cargo install trunk zzhack
 ```
 
 Now, let's launch your first WASM WebApp!
-```
+```sh
 zzhack init
 zzhack serve
 ```
