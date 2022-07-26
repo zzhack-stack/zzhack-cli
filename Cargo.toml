@@ -1,6 +1,6 @@
 [package]
 name = "zzhack"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 description = "ZZHACK WASM webapp build tool"
 keywords = ["WASM", "CLI", "ZZHACK", "webapp"]
