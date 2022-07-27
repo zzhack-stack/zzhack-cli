@@ -1,5 +1,8 @@
 <img src="./docs/wiki_cover.png" width="100%" />
 
+[![](https://img.shields.io/crates/v/zzhack.svg?color=brightgreen&style=flat-square)](https://crates.io/crates/zzhack)
+![GitHub](https://img.shields.io/github/license/zzhack-stack/zzhack-cli?color=green&style=flat-square)
+
 [English](https://github.com/zzhack-stack/zzhack-cli/blob/main/README.md) | 中文文档
 
 `zzhack-cli` 是一个可以帮助你快速生成 [WASM](https://webassembly.org/) WebApp 的命令行工具，不需要一行代码只需要简单的配置即可。值得一提的是 `zzhack-cli` 的 UI 模板来自于 [zzhack](https://github.com/zzhack-stack/zzhack)，你可以直接访问 [Live Demo](https://www.zzhack.fun/) 来获得更真实的体验。
