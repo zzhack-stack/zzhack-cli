@@ -1,4 +1,4 @@
-<img src="./docs/wiki_cover.png" />
+<img src="./docs/wiki_cover.png" width="100%" />
 
 English | [中文文档](https://github.com/zzhack-stack/zzhack-cli/blob/main/README_ZH.md)
 
