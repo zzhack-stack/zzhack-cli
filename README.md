@@ -16,6 +16,11 @@ cargo install trunk zzhack
 
 Now, let's launch your first WASM WebApp!
 ```sh
+# Create project workspace
+mkdir my-first-wasm-project
+
+cd my-first-wasm-project
+
 zzhack init
 zzhack serve
 ```
